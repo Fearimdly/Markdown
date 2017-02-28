@@ -8,23 +8,32 @@ import android.text.Html;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.BulletSpan;
+import android.text.style.DynamicDrawableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
 import android.text.style.QuoteSpan;
 import android.text.style.StrikethroughSpan;
+import android.text.style.StyleSpan;
+import android.text.style.TypefaceSpan;
+import android.util.Log;
 import android.widget.TextView;
 
+import com.mikepenz.octicons_typeface_library.Octicons;
 import com.zzhoujay.markdown.style.CodeBlockSpan;
 import com.zzhoujay.markdown.style.CodeSpan;
+import com.zzhoujay.markdown.style.CustomTypeFace;
 import com.zzhoujay.markdown.style.EmailSpan;
 import com.zzhoujay.markdown.style.FontSpan;
 import com.zzhoujay.markdown.style.LinkSpan;
 import com.zzhoujay.markdown.style.MarkDownBulletSpan;
 import com.zzhoujay.markdown.style.MarkDownQuoteSpan;
 import com.zzhoujay.markdown.style.QuotaBulletSpan;
+import com.zzhoujay.markdown.style.TodoBulletSpan;
 import com.zzhoujay.markdown.style.UnderLineSpan;
 
 import java.lang.ref.WeakReference;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by zhou on 16-6-28.
@@ -175,6 +184,22 @@ public class StyleBuilderImpl implements StyleBuilder {
     }
 
     @Override
+    public SpannableStringBuilder todo(CharSequence charSequence) {
+        SpannableStringBuilder spannableStringBuilder = SpannableStringBuilder.valueOf(charSequence);
+        TodoBulletSpan bulletSpan = new TodoBulletSpan(h1_color, false, textViewWeakReference.get());
+        spannableStringBuilder.setSpan(bulletSpan, 0, spannableStringBuilder.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return spannableStringBuilder;
+    }
+
+    @Override
+    public SpannableStringBuilder done(CharSequence charSequence) {
+        SpannableStringBuilder spannableStringBuilder = SpannableStringBuilder.valueOf(charSequence);
+        TodoBulletSpan bulletSpan = new TodoBulletSpan(h1_color, true, textViewWeakReference.get());
+        spannableStringBuilder.setSpan(bulletSpan, 0, spannableStringBuilder.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return spannableStringBuilder;
+    }
+
+    @Override
     public SpannableStringBuilder codeBlock(CharSequence... charSequence) {
         SpannableStringBuilder builder = SpannableStringBuilder.valueOf("$");
         CodeBlockSpan codeBlockSpan = new CodeBlockSpan(getTextViewRealWidth(), code_color, charSequence);
@@ -189,9 +214,31 @@ public class StyleBuilderImpl implements StyleBuilder {
 
     @Override
     public SpannableStringBuilder link(CharSequence title, String link, String hint) {
+        Pattern pattern = Pattern.compile("^com\\.lesschat\\.(.*)://(.*)");
+        Matcher matcher = pattern.matcher(link);
+        String drawable = "";
+        if (matcher.find()) {
+            String type = matcher.group(1);
+            switch (type) {
+                case "task":
+                    drawable = String.valueOf(Octicons.Icon.oct_tasklist.getCharacter()) + " ";
+                    break;
+                case "file":
+                    break;
+                case "event":
+                    break;
+                case "approval":
+                    break;
+                default:
+                    break;
+            }
+        }
+        Octicons octicons = new Octicons();
+        title = drawable + title;
         SpannableStringBuilder builder = SpannableStringBuilder.valueOf(title);
         LinkSpan linkSpan = new LinkSpan(link, link_color);
         builder.setSpan(linkSpan, 0, title.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        builder.setSpan(new CustomTypeFace("", octicons.getTypeface(textViewWeakReference.get().getContext())), 0, title.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         return builder;
     }
 

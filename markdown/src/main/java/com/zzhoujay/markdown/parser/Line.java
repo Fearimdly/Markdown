@@ -12,6 +12,8 @@ public class Line {
     public static final int LINE_TYPE_QUOTA = 1; // 引用
     public static final int LINE_TYPE_UL = 2; // 无序列表
     public static final int LINE_TYPE_OL = 3; // 有序列表
+    public static final int LINE_TYPE_TODO = 100; // 待完成
+    public static final int LINE_TYPE_DONE = 101; // 已完成
     public static final int LINE_TYPE_H1 = 4; // H1
     public static final int LINE_TYPE_H2 = 5; // H2
     public static final int LINE_TYPE_H3 = 6; // H3

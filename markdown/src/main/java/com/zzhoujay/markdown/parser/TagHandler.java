@@ -26,6 +26,10 @@ public interface TagHandler extends TagFinder, QueueConsumer, TagGetter {
 
     boolean ol(Line line);
 
+    boolean todo(Line line);
+
+    boolean done(Line line);
+
     boolean gap(Line line);
 
     boolean em(Line line);
@@ -47,6 +51,8 @@ public interface TagHandler extends TagFinder, QueueConsumer, TagGetter {
     boolean link2(Line line);
 
     boolean linkId(String line);
+
+    boolean linkWT(Line line);
 
     boolean image(Line line);
 

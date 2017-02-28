@@ -17,6 +17,8 @@ public class Tag {
     public static final int QUOTA = 8;
     public static final int UL = 9;
     public static final int OL = 10;
+    public static final int TODO = 100;
+    public static final int DONE = 101;
     public static final int EM = 11;
     public static final int ITALIC = 12;
     public static final int EM_ITALIC = 13;
@@ -26,6 +28,7 @@ public class Tag {
     public static final int LINK = 17;
     public static final int LINK2 = 18;
     public static final int LINK_ID = 19;
+    public static final int LINK_WT = 102;
     public static final int IMAGE = 20;
     public static final int IMAGE2 = 21;
     public static final int IMAGE_ID = 22;

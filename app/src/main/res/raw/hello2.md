@@ -13,6 +13,13 @@
 * 支持GIF图片
 
 
+- [ ] 支持以 PDF 格式导出文稿
+- [ ] 改进 Cmd 渲染算法，使用局部渲染技术提高渲染效率
+- [x] 新增 Todo 列表功能
+- [x] 修复 LaTex 公式渲染问题
+- [x] 新增 LaTex 公式编号功能
+
+
 ### 效果
 
 `hello code`
@@ -49,7 +56,7 @@ RichText
        .into(textView); // 设置目标TextView
 ```
 
-### 自定义修复宽高
+### 自定义修复宽高[流程图](https://www.zybuluo.com/mdeditor?url=https://www.zybuluo.com/static/editor/md-help.markdown#7-流程图)
 
 ```
 RichText.from(text).fix(new ImageFixCallback() {

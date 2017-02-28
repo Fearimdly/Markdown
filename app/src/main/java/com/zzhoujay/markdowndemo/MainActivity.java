@@ -4,13 +4,17 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v4.view.LayoutInflaterCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.mikepenz.google_material_typeface_library.GoogleMaterial;
+import com.mikepenz.octicons_typeface_library.Octicons;
 import com.zzhoujay.markdown.MarkDown;
 
 import java.io.InputStream;
@@ -34,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         assert textView != null;
         textView.setMovementMethod(LinkMovementMethod.getInstance());
 
-        final InputStream stream = getResources().openRawResource(R.raw.hello);
+        final InputStream stream = getResources().openRawResource(R.raw.link_wt);
 
         textView.post(new Runnable() {
             @Override
@@ -50,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
                 }, textView);
                 long useTime = System.nanoTime() - time;
                 Toast.makeText(getApplicationContext(), "use time:" + useTime, Toast.LENGTH_LONG).show();
+                Log.e("use time", String.valueOf(useTime));
                 textView.setText(spanned);
             }
         });

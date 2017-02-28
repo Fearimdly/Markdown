@@ -1,6 +1,7 @@
 package com.zzhoujay.markdown.parser;
 
 import android.text.SpannableStringBuilder;
+import android.util.Log;
 import android.util.Pair;
 import android.util.SparseArray;
 
@@ -19,17 +20,19 @@ public class TagHandlerImpl implements TagHandler {
     private static final Matcher matcherH1_2 = Pattern.compile("^\\s*=+\\s*$").matcher("");
     private static final Matcher matcherH2_2 = Pattern.compile("^\\s*-+\\s*$").matcher("");
 
-    private static final Matcher matcherH = Pattern.compile("^\\s*#{1,6}\\s*([^#]*)(\\s*#)?").matcher("");
-    private static final Matcher matcherH1 = Pattern.compile("^\\s*#\\s*([^#]*)(\\s*#)?").matcher("");
-    private static final Matcher matcherH2 = Pattern.compile("^\\s*#{2}\\s*([^#]*)(\\s*#)?").matcher("");
-    private static final Matcher matcherH3 = Pattern.compile("^\\s*#{3}\\s*([^#]*)(\\s*#)?").matcher("");
-    private static final Matcher matcherH4 = Pattern.compile("^\\s*#{4}\\s*([^#]*)(\\s*#)?").matcher("");
-    private static final Matcher matcherH5 = Pattern.compile("^\\s*#{5}\\s*([^#]*)(\\s*#)?").matcher("");
-    private static final Matcher matcherH6 = Pattern.compile("^\\s*#{6}\\s*([^#]*)(\\s*#)?").matcher("");
+    private static final Matcher matcherH = Pattern.compile("^\\s*#{1,6}\\s*(.*)(\\s*#)?").matcher("");
+    private static final Matcher matcherH1 = Pattern.compile("^\\s*#\\s*(.*)(\\s*#)?").matcher("");
+    private static final Matcher matcherH2 = Pattern.compile("^\\s*#{2}\\s*(.*)(\\s*#)?").matcher("");
+    private static final Matcher matcherH3 = Pattern.compile("^\\s*#{3}\\s*(.*)(\\s*#)?").matcher("");
+    private static final Matcher matcherH4 = Pattern.compile("^\\s*#{4}\\s*(.*)(\\s*#)?").matcher("");
+    private static final Matcher matcherH5 = Pattern.compile("^\\s*#{5}\\s*(.*)(\\s*#)?").matcher("");
+    private static final Matcher matcherH6 = Pattern.compile("^\\s*#{6}\\s*(.*)(\\s*#)?").matcher("");
 
     private static final Matcher matcherQuota = Pattern.compile("^\\s{0,3}>\\s(.*)").matcher("");
-    private static final Matcher matcherUl = Pattern.compile("^\\s*[*+-]\\s+(.*)").matcher("");
+    private static final Matcher matcherUl = Pattern.compile("^\\s*[*+-]\\s+(?!\\[\\s\\]\\s+|\\[x\\]\\s+)(.*)").matcher("");
     private static final Matcher matcherOl = Pattern.compile("^\\s*\\d+\\.\\s+(.*)").matcher("");
+    private static final Matcher matcherTodo = Pattern.compile("^\\s*[*+-]\\s+\\[\\s\\]\\s+(.*)").matcher("");
+    private static final Matcher matcherDone = Pattern.compile("^\\s*[*+-]\\s+\\[x\\]\\s+(.*)").matcher("");
 
     private static final Matcher matcherItalic = Pattern.compile("[^*_]*(([*_])([^*_].*?)\\2)").matcher("");
     private static final Matcher matcherEm = Pattern.compile("[^*_]*(([*_])\\2([^*_].*?)\\2\\2)").matcher("");
@@ -41,6 +44,7 @@ public class TagHandlerImpl implements TagHandler {
     private static final Matcher matcherImage = Pattern.compile(".*?(!\\[\\s*(.*?)\\s*]\\(\\s*(\\S*?)(\\s+(['\"])(.*?)\\5)?\\s*?\\))").matcher("");
     private static final Matcher matcherLink2 = Pattern.compile(".*?(\\[\\s*(.*?)\\s*]\\s*\\[\\s*(.*?)\\s*])").matcher("");
     private static final Matcher matcherLinkId = Pattern.compile("^\\s*\\[\\s*(.*?)\\s*]:\\s*(\\S+?)(\\s+(['\"])(.*?)\\4)?\\s*$").matcher("");
+    private static final Matcher matcherLinkWT = Pattern.compile("\\[#(task|file|event|approval)-(.*)\\|(.*)\\]").matcher("");
     private static final Matcher matcherImage2 = Pattern.compile(".*?(!\\[\\s*(.*?)\\s*]\\s*\\[\\s*(.*?)\\s*])").matcher("");
     private static final Matcher matcherImageId = Pattern.compile("^\\s*!\\[\\s*(.*?)\\s*]:\\s*(\\S+?)(\\s+(['\"])(.*?)\\4)?\\s*$").matcher("");
 
@@ -72,6 +76,8 @@ public class TagHandlerImpl implements TagHandler {
         matchers.put(Tag.QUOTA, matcherQuota);
         matchers.put(Tag.UL, matcherUl);
         matchers.put(Tag.OL, matcherOl);
+        matchers.put(Tag.TODO, matcherTodo);
+        matchers.put(Tag.DONE, matcherDone);
         matchers.put(Tag.EM, matcherEm);
         matchers.put(Tag.ITALIC, matcherItalic);
         matchers.put(Tag.EM_ITALIC, matcherEmItalic);
@@ -81,6 +87,7 @@ public class TagHandlerImpl implements TagHandler {
         matchers.put(Tag.LINK, matcherLink);
         matchers.put(Tag.LINK2, matcherLink2);
         matchers.put(Tag.LINK_ID, matcherLinkId);
+        matchers.put(Tag.LINK_WT, matcherLinkWT);
         matchers.put(Tag.IMAGE, matcherImage);
         matchers.put(Tag.IMAGE2, matcherImage2);
         matchers.put(Tag.IMAGE_ID, matcherImageId);
@@ -489,6 +496,32 @@ public class TagHandlerImpl implements TagHandler {
     }
 
     @Override
+    public boolean todo(Line line) {
+        Matcher matcher = obtain(Tag.TODO, line.getSource());
+        if (matcher.matches()) {
+            line.setType(Line.LINE_TYPE_TODO);
+            line.setStyle(SpannableStringBuilder.valueOf(matcher.group(1)));
+            inline(line);
+            line.setStyle(styleBuilder.todo(line.getStyle()));
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean done(Line line) {
+        Matcher matcher = obtain(Tag.DONE, line.getSource());
+        if (matcher.matches()) {
+            line.setType(Line.LINE_TYPE_DONE);
+            line.setStyle(SpannableStringBuilder.valueOf(matcher.group(1)));
+            inline(line);
+            line.setStyle(styleBuilder.done(line.getStyle()));
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     public boolean gap(Line line) {
         line = line.get();
         Matcher matcher = obtain(Tag.GAP, line.getSource());
@@ -677,6 +710,21 @@ public class TagHandlerImpl implements TagHandler {
     }
 
     @Override
+    public boolean linkWT(Line line) {
+        Matcher matcher = obtain(Tag.LINK_WT, line.getSource());
+        if (matcher.find()) {
+            String source = line.getSource();
+            String result = matcher.group(0);
+            String type = matcher.group(1);
+            String id = matcher.group(2);
+            String title = matcher.group(3);
+            String urlMarkdown = "[" + title +"]" + "(" + "com.lesschat." + type + "://" + id + ")";
+            line.setSource(source.replace(result, urlMarkdown));
+        }
+        return false;
+    }
+
+    @Override
     public boolean image(Line line) {
         line = line.get();
         SpannableStringBuilder builder = (SpannableStringBuilder) line.getStyle();
@@ -805,6 +853,7 @@ public class TagHandlerImpl implements TagHandler {
     @Override
     public boolean inline(Line line) {
         boolean flag = code(line);
+        flag = linkWT(line) || flag;
         flag = emItalic(line) || flag;
         flag = em(line) || flag;
         flag = italic(line) || flag;

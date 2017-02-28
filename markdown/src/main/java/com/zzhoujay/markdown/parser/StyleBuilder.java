@@ -1,5 +1,6 @@
 package com.zzhoujay.markdown.parser;
 
+import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 
 /**
@@ -45,6 +46,10 @@ public interface StyleBuilder {
     SpannableStringBuilder ul2(CharSequence charSequence, int quotaLevel, int bulletLevel);
 
     SpannableStringBuilder ol2(CharSequence charSequence, int quotaLevel, int bulletLevel, int index);
+
+    SpannableStringBuilder todo(CharSequence charSequence);
+
+    SpannableStringBuilder done(CharSequence charSequence);
 
     SpannableStringBuilder codeBlock(CharSequence... charSequence);
 
