@@ -38,7 +38,7 @@ dependencies {
 uploadArchives {
     repositories.mavenDeployer {
         repository(url: "file://" + file("maven"))
-        pom.groupId = "com.zzhoujay.markdown"
+        pom.groupId = "com.worktile.markdown"
         pom.artifactId = 'markdown'
         pom.version = version_name
     }
