@@ -3,10 +3,11 @@
   <groupId>com.worktile.markdown</groupId>
   <artifactId>markdown</artifactId>
   <versioning>
-    <release>1.0.5</release>
+    <release>1.0.5.1</release>
     <versions>
       <version>1.0.5</version>
+      <version>1.0.5.1</version>
     </versions>
-    <lastUpdated>20170228102746</lastUpdated>
+    <lastUpdated>20170301103328</lastUpdated>
   </versioning>
 </metadata>
