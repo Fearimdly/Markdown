@@ -116,6 +116,8 @@ class MarkDownParser {
             }
             // 先过滤worktile关联
             tagHandler.linkWT(queue.currLine());
+            tagHandler.linkWTUser(queue.currLine());
+            tagHandler.linkWTProject(queue.currLine());
             // 解析style
             if (tagHandler.gap(queue.currLine()) || tagHandler.quota(queue.currLine()) || tagHandler.ol(queue.currLine()) ||
                     tagHandler.ul(queue.currLine()) || tagHandler.h(queue.currLine()) || tagHandler.todo(queue.currLine()) ||
