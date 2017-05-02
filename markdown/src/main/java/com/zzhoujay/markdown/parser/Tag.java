@@ -1,5 +1,7 @@
 package com.zzhoujay.markdown.parser;
 
+import android.os.ParcelUuid;
+
 /**
  * Created by zhou on 16-7-10.
  */
@@ -29,6 +31,8 @@ public class Tag {
     public static final int LINK2 = 18;
     public static final int LINK_ID = 19;
     public static final int LINK_WT = 102;
+    public static final int LINK_WT_USER = 103;
+    public static final int LINK_WT_PROJECT = 104;
     public static final int IMAGE = 20;
     public static final int IMAGE2 = 21;
     public static final int IMAGE_ID = 22;

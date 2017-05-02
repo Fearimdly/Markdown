@@ -1,7 +1,6 @@
 package com.zzhoujay.markdown.parser;
 
 import android.text.SpannableStringBuilder;
-import android.util.Log;
 import android.util.Pair;
 import android.util.SparseArray;
 
@@ -45,6 +44,8 @@ public class TagHandlerImpl implements TagHandler {
     private static final Matcher matcherLink2 = Pattern.compile(".*?(\\[\\s*(.*?)\\s*]\\s*\\[\\s*(.*?)\\s*])").matcher("");
     private static final Matcher matcherLinkId = Pattern.compile("^\\s*\\[\\s*(.*?)\\s*]:\\s*(\\S+?)(\\s+(['\"])(.*?)\\4)?\\s*$").matcher("");
     private static final Matcher matcherLinkWT = Pattern.compile("\\[#(task|file|event|approval)-.*?\\|.*?\\]").matcher("");
+    private static final Matcher matcherLinkWTUser = Pattern.compile("\\[@.*?\\|.*?\\]").matcher("");
+    private static final Matcher matcherLinkWTProject = Pattern.compile("\\[/tasks/projects/.*?\\|.*?\\]").matcher("");
     private static final Matcher matcherImage2 = Pattern.compile(".*?(!\\[\\s*(.*?)\\s*]\\s*\\[\\s*(.*?)\\s*])").matcher("");
     private static final Matcher matcherImageId = Pattern.compile("^\\s*!\\[\\s*(.*?)\\s*]:\\s*(\\S+?)(\\s+(['\"])(.*?)\\4)?\\s*$").matcher("");
 
@@ -88,6 +89,8 @@ public class TagHandlerImpl implements TagHandler {
         matchers.put(Tag.LINK2, matcherLink2);
         matchers.put(Tag.LINK_ID, matcherLinkId);
         matchers.put(Tag.LINK_WT, matcherLinkWT);
+        matchers.put(Tag.LINK_WT_USER, matcherLinkWTUser);
+        matchers.put(Tag.LINK_WT_PROJECT, matcherLinkWTProject);
         matchers.put(Tag.IMAGE, matcherImage);
         matchers.put(Tag.IMAGE2, matcherImage2);
         matchers.put(Tag.IMAGE_ID, matcherImageId);
@@ -714,7 +717,6 @@ public class TagHandlerImpl implements TagHandler {
         Matcher matcher = obtain(Tag.LINK_WT, line.getSource());
         int index = 0;
         while (matcher.find()) {
-            Log.e("markdown", matcher.group());
             String source = matcher.group();
             Pattern detailPattern = Pattern.compile("\\[#(task|file|event|approval)-(.*)\\|(.*)\\]");
             Matcher detailMatcher = detailPattern.matcher(source);
@@ -725,6 +727,52 @@ public class TagHandlerImpl implements TagHandler {
                 String title = detailMatcher.group(3);
                 String urlMarkdown = "[" + title + "]" + "(" + "com.lesschat." + type + "://" + id + ")";
                 if (index > 0) {
+                    urlMarkdown = "\n" + urlMarkdown;
+                }
+                line.setSource(line.getSource().replace(result, urlMarkdown));
+            }
+            index += 1;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean linkWTProject(Line line) {
+        Matcher matcher = obtain(Tag.LINK_WT_PROJECT, line.getSource());
+        int index = 0;
+        while (matcher.find()) {
+            String source = matcher.group();
+            Pattern detailPattern = Pattern.compile("\\[/tasks/projects/(.*)\\|(.*)\\]");
+            Matcher detailMacher = detailPattern.matcher(source);
+            if (detailMacher.find()) {
+                String result = detailMacher.group(0);
+                String projectId = detailMacher.group(1);
+                String name = detailMacher.group(2);
+                String urlMarkdown = "[" + name + "]" + "(com.lesschat.project://"+ projectId + ")";
+                if (index > 0){
+                    urlMarkdown = "\n" + urlMarkdown;
+                }
+                line.setSource(line.getSource().replace(result, urlMarkdown));
+            }
+            index += 1;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean linkWTUser(Line line) {
+        Matcher matcher = obtain(Tag.LINK_WT_USER, line.getSource());
+        int index = 0;
+        while (matcher.find()) {
+            String source = matcher.group();
+            Pattern pattern = Pattern.compile("\\[@(.*)\\|(.*)\\]");
+            Matcher detailMatcher = pattern.matcher(source);
+            if (detailMatcher.find()) {
+                String result = detailMatcher.group(0);
+                String uid = detailMatcher.group(1);
+                String name = detailMatcher.group(2);
+                String urlMarkdown = "[" + name + "]" + "(com.lesschat.project://"+ uid + ")";
+                if (index > 0){
                     urlMarkdown = "\n" + urlMarkdown;
                 }
                 line.setSource(line.getSource().replace(result, urlMarkdown));
