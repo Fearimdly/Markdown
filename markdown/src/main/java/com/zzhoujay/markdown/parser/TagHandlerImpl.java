@@ -46,6 +46,7 @@ public class TagHandlerImpl implements TagHandler {
     private static final Matcher matcherLinkWT = Pattern.compile("\\[#(task|file|event|approval)-.*?\\|.*?\\]").matcher("");
     private static final Matcher matcherLinkWTUser = Pattern.compile("\\[@.*?\\|.*?\\]").matcher("");
     private static final Matcher matcherLinkWTProject = Pattern.compile("\\[/tasks/projects/.*?\\|.*?\\]").matcher("");
+    private static final Matcher matcherLinkWTGroup = Pattern.compile("\\[!channel\\|群组\\]").matcher("");
     private static final Matcher matcherImage2 = Pattern.compile(".*?(!\\[\\s*(.*?)\\s*]\\s*\\[\\s*(.*?)\\s*])").matcher("");
     private static final Matcher matcherImageId = Pattern.compile("^\\s*!\\[\\s*(.*?)\\s*]:\\s*(\\S+?)(\\s+(['\"])(.*?)\\4)?\\s*$").matcher("");
 
@@ -91,6 +92,7 @@ public class TagHandlerImpl implements TagHandler {
         matchers.put(Tag.LINK_WT, matcherLinkWT);
         matchers.put(Tag.LINK_WT_USER, matcherLinkWTUser);
         matchers.put(Tag.LINK_WT_PROJECT, matcherLinkWTProject);
+        matchers.put(Tag.LINK_WT_GROUP, matcherLinkWTGroup);
         matchers.put(Tag.IMAGE, matcherImage);
         matchers.put(Tag.IMAGE2, matcherImage2);
         matchers.put(Tag.IMAGE_ID, matcherImageId);
@@ -743,11 +745,11 @@ public class TagHandlerImpl implements TagHandler {
         while (matcher.find()) {
             String source = matcher.group();
             Pattern detailPattern = Pattern.compile("\\[/tasks/projects/(.*)\\|(.*)\\]");
-            Matcher detailMacher = detailPattern.matcher(source);
-            if (detailMacher.find()) {
-                String result = detailMacher.group(0);
-                String projectId = detailMacher.group(1);
-                String name = detailMacher.group(2);
+            Matcher detailMatcher = detailPattern.matcher(source);
+            if (detailMatcher.find()) {
+                String result = detailMatcher.group(0);
+                String projectId = detailMatcher.group(1);
+                String name = detailMatcher.group(2);
                 String urlMarkdown = "[" + name + "]" + "(com.lesschat.project://"+ projectId + ")";
                 if (index > 0){
                     urlMarkdown = "\n" + urlMarkdown;
@@ -771,13 +773,23 @@ public class TagHandlerImpl implements TagHandler {
                 String result = detailMatcher.group(0);
                 String uid = detailMatcher.group(1);
                 String name = detailMatcher.group(2);
-                String urlMarkdown = "[" + name + "]" + "(com.lesschat.project://"+ uid + ")";
+                String urlMarkdown = "[" + "@" + name + "]" + "(com.lesschat.project://"+ uid + ")";
                 if (index > 0){
                     urlMarkdown = "\n" + urlMarkdown;
                 }
                 line.setSource(line.getSource().replace(result, urlMarkdown));
             }
             index += 1;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean linkWTGroup(Line line) {
+        Matcher matcher = obtain(Tag.LINK_WT_GROUP, line.getSource());
+        while (matcher.find()) {
+            String source = matcher.group();
+            line.setSource(line.getSource().replace(source, "[@群组]" + "(com.lesschat.channel://)"));
         }
         return false;
     }

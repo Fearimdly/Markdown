@@ -9,3 +9,5 @@
 邀请 [@19ab0dc9513249deb6e6bb652dc65aad|shidai] 加入了群组
 
 xiaorui将你加入了项目[/tasks/projects/58dcb5a414ceba1115c3ae41|Dnndj bdje]
+
+吼吼吼p[!channel|群组] sss
