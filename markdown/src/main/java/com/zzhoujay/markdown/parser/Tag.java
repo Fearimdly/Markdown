@@ -34,6 +34,7 @@ public class Tag {
     public static final int LINK_WT_USER = 103;
     public static final int LINK_WT_PROJECT = 104;
     public static final int LINK_WT_GROUP = 105;
+    public static final int LINK_AUTO_LINK2 = 106;
     public static final int IMAGE = 20;
     public static final int IMAGE2 = 21;
     public static final int IMAGE_ID = 22;

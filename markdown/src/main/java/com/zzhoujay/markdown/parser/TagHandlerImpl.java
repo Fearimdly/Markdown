@@ -51,7 +51,8 @@ public class TagHandlerImpl implements TagHandler {
     private static final Matcher matcherImageId = Pattern.compile("^\\s*!\\[\\s*(.*?)\\s*]:\\s*(\\S+?)(\\s+(['\"])(.*?)\\4)?\\s*$").matcher("");
 
     private static final Matcher matcherEmail = Pattern.compile(".*?(<(\\S+@\\S+\\.\\S+)>).*?").matcher("");
-    private static final Matcher matcherAutoLink = Pattern.compile("((https|http|ftp|rtsp|mms)?://)[^\\s]+").matcher("");
+    private static final Matcher matcherAutoLink = Pattern.compile("((https|http|ftp|rtsp|mms)?://)[^\\s]+$").matcher("");
+    private static final Matcher matcherAutoLink2 = Pattern.compile("\\[((https|http|ftp|rtsp|mms)?://)[^\\s]+\\]").matcher("");
 
     private static final Matcher matcherEndSpace = Pattern.compile("(.*?) {2} *$").matcher("");
     private static final Matcher matcherInlineSpace = Pattern.compile("\\S*(\\s+)\\S+").matcher("");
@@ -93,6 +94,7 @@ public class TagHandlerImpl implements TagHandler {
         matchers.put(Tag.LINK_WT_USER, matcherLinkWTUser);
         matchers.put(Tag.LINK_WT_PROJECT, matcherLinkWTProject);
         matchers.put(Tag.LINK_WT_GROUP, matcherLinkWTGroup);
+        matchers.put(Tag.LINK_AUTO_LINK2, matcherAutoLink2);
         matchers.put(Tag.IMAGE, matcherImage);
         matchers.put(Tag.IMAGE2, matcherImage2);
         matchers.put(Tag.IMAGE_ID, matcherImageId);
@@ -795,6 +797,27 @@ public class TagHandlerImpl implements TagHandler {
     }
 
     @Override
+    public boolean linkWTAutoLink2(Line line) {
+        line = line.get();
+        SpannableStringBuilder builder = (SpannableStringBuilder) line.getStyle();
+        Matcher matcher = obtain(Tag.LINK_AUTO_LINK2, builder);
+        boolean m = false;
+        while (matcher.find()) {
+            String find = matcher.group();
+            if (find.length() > 1) {
+                String content = find.substring(1, find.length() - 1);
+                builder.clearSpans();
+                builder.delete(matcher.start(), matcher.end());
+                CharSequence charSequence = styleBuilder.link(content, content, "");
+                builder.insert(matcher.start(), charSequence);
+                line.setSource(builder.toString());
+            }
+            m = true;
+        }
+        return m;
+    }
+
+    @Override
     public boolean image(Line line) {
         line = line.get();
         SpannableStringBuilder builder = (SpannableStringBuilder) line.getStyle();
@@ -934,6 +957,7 @@ public class TagHandlerImpl implements TagHandler {
         flag = link(line) || flag;
         flag = link2(line) || flag;
         flag = autoLink(line) || flag;
+        flag = linkWTAutoLink2(line) || flag;
         return flag;
     }
 
