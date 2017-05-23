@@ -29,6 +29,10 @@ public class MainActivity extends AppCompatActivity {
             "\n" +
             "__by zzhoujay__\n";
 
+    private static final String markdown_test = "image: ![image](http://image.tianjimedia.com/uploadImages/2015/129/56/J63MI042Z4P8.jpg)\n[link](https://github.com/zzhoujay/RichText/issues)";
+
+    private static final String empty_string = "  \n   \n  \n# hello";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,9 +48,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 long time = System.nanoTime();
-                Spanned spanned = MarkDown.fromMarkdown(stream, new Html.ImageGetter() {
+                Spanned spanned = MarkDown.fromMarkdown(empty_string, new Html.ImageGetter() {
+                    public static final String TAG = "Markdown";
+
                     @Override
                     public Drawable getDrawable(String source) {
+                        Log.d(TAG, "getDrawable() called with: source = [" + source + "]");
                         Drawable drawable = new ColorDrawable(Color.LTGRAY);
                         drawable.setBounds(0, 0, textView.getWidth() - textView.getPaddingLeft() - textView.getPaddingRight(), 400);
                         return drawable;
@@ -59,9 +66,5 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-//        SpannableString spannableString = new SpannableString("this a test text");
-//        QuotaBulletSpan quotaBulletSpan = new QuotaBulletSpan(2, 0, Color.LTGRAY, Color.DKGRAY, 1, textView);
-//        spannableString.setSpan(quotaBulletSpan,0,spannableString.length(),Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-//        textView.setText(spannableString);
     }
 }
