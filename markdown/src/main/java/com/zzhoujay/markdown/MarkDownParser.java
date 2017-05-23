@@ -80,7 +80,7 @@ class MarkDownParser {
      * @param queue LineQueue
      * @return Spanned
      */
-    private Spannable parse(final LineQueue queue) {
+    private synchronized Spannable parse(final LineQueue queue) {
         if (queue == null) {
             return null;
         }
