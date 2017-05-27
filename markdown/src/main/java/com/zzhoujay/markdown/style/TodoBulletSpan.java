@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.text.Layout;
 import android.text.Spanned;
@@ -49,6 +50,7 @@ public class TodoBulletSpan extends BulletSpan {
     @Override
     public void drawLeadingMargin(Canvas c, Paint p, int x, int dir, int top, int baseline, int bottom, CharSequence text, int start, int end, boolean first, Layout l) {
         if (((Spanned) text).getSpanStart(this) == start) {
+            Typeface originalTypeface = p.getTypeface();
             GoogleMaterial googleMaterial = new GoogleMaterial();
             p.setTypeface(googleMaterial.getTypeface(textViewWeakReference.get().getContext()));
             if (!mFinish) {
@@ -58,6 +60,7 @@ public class TodoBulletSpan extends BulletSpan {
                 String checkbox = String.valueOf(GoogleMaterial.Icon.gmd_check_box.getCharacter());
                 c.drawText(checkbox, x - p.measureText("$") + margin - mGapWidth, baseline, p);
             }
+            p.setTypeface(originalTypeface);
         }
     }
 }

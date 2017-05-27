@@ -54,6 +54,14 @@ public interface TagHandler extends TagFinder, QueueConsumer, TagGetter {
 
     boolean linkWT(Line line);
 
+    boolean linkWTUser(Line line);
+
+    boolean linkWTProject(Line line);
+
+    boolean linkWTGroup(Line line);
+
+    boolean linkWTAutoLink2(Line line);
+
     boolean image(Line line);
 
     boolean image2(Line line);

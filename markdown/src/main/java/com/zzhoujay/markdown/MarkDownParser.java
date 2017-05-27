@@ -41,7 +41,7 @@ class MarkDownParser {
     }
 
     MarkDownParser(String text, StyleBuilder styleBuilder) {
-        this(new BufferedReader(new StringReader(text)), styleBuilder);
+        this(new BufferedReader(new StringReader(text == null ? "" : text)), styleBuilder);
     }
 
 
@@ -80,7 +80,10 @@ class MarkDownParser {
      * @param queue LineQueue
      * @return Spanned
      */
-    private Spannable parse(final LineQueue queue) {
+    private synchronized Spannable parse(final LineQueue queue) {
+        if (queue == null) {
+            return null;
+        }
         tagHandler.setQueueProvider(new QueueConsumer.QueueProvider() {
             @Override
             public LineQueue getQueue() {
@@ -88,6 +91,9 @@ class MarkDownParser {
             }
         });
         removeCurrBlankLine(queue);
+        if (queue.empty()) {
+            return null;
+        }
         boolean notBlock;// 当前Line不是CodeBlock
         do {
 
@@ -116,6 +122,9 @@ class MarkDownParser {
             }
             // 先过滤worktile关联
             tagHandler.linkWT(queue.currLine());
+            tagHandler.linkWTUser(queue.currLine());
+            tagHandler.linkWTProject(queue.currLine());
+            tagHandler.linkWTGroup(queue.currLine());
             // 解析style
             if (tagHandler.gap(queue.currLine()) || tagHandler.quota(queue.currLine()) || tagHandler.ol(queue.currLine()) ||
                     tagHandler.ul(queue.currLine()) || tagHandler.h(queue.currLine()) || tagHandler.todo(queue.currLine()) ||
