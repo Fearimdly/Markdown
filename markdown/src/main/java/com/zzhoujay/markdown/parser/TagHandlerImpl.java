@@ -811,6 +811,7 @@ public class TagHandlerImpl implements TagHandler {
                 CharSequence charSequence = styleBuilder.link(content, content, "");
                 builder.insert(matcher.start(), charSequence);
                 line.setSource(builder.toString());
+                matcher = obtain(Tag.LINK_AUTO_LINK2, builder);
             }
             m = true;
         }
