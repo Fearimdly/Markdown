@@ -34,11 +34,12 @@ public class QuotaBulletSpan extends QuoteSpan {
     private int level = 0;
     private int bulletColor;
     private int margin;
-    private WeakReference<TextView> textViewWeakReference;
     private int quotaLevel;
 
+    private Paint mPaint;
 
-    public QuotaBulletSpan(int quotaLevel, int bulletLevel, int quotaColor, int bulletColor, int pointIndex, TextView textView) {
+
+    public QuotaBulletSpan(int quotaLevel, int bulletLevel, int quotaColor, int bulletColor, int pointIndex) {
         super(quotaColor);
         this.quotaLevel = quotaLevel;
         this.level = bulletLevel;
@@ -54,7 +55,6 @@ public class QuotaBulletSpan extends QuoteSpan {
             index = null;
         }
         this.bulletColor = bulletColor;
-        this.textViewWeakReference = new WeakReference<>(textView);
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -130,12 +130,11 @@ public class QuotaBulletSpan extends QuoteSpan {
 
     @Override
     public int getLeadingMargin(boolean first) {
-        if (textViewWeakReference == null && margin != 0) {
+        if (mPaint == null && margin != 0) {
             return margin;
         }
-        TextView textView = textViewWeakReference.get();
-        if (index != null && textView != null) {
-            margin = (int) (tab + (mGapWidth + textView.getPaint().measureText(index)) * (level + 1));
+        if (index != null && mPaint != null) {
+            margin = (int) (tab + (mGapWidth + mPaint.measureText(index)) * (level + 1));
         } else {
             margin = (2 * BULLET_RADIUS + mGapWidth) * (level + 1) + tab;
         }

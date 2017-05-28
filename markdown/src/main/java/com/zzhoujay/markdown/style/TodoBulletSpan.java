@@ -1,6 +1,7 @@
 package com.zzhoujay.markdown.style;
 
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -30,29 +31,34 @@ public class TodoBulletSpan extends BulletSpan {
     private final int mColor;
     private int margin;
 
-    private WeakReference<TextView> textViewWeakReference;
+    private Context mContext;
+    private Paint mPaint;
 
-    public TodoBulletSpan(int color, boolean finish, TextView textView) {
+    public TodoBulletSpan(int color, boolean finish, Context context) {
         super(mGapWidth, color);
         mFinish = finish;
         mColor = color;
-        textViewWeakReference = new WeakReference<>(textView);
+        mContext = context;
     }
 
     @Override
     public int getLeadingMargin(boolean first) {
-        TextView textView = textViewWeakReference.get();
-        margin = (int) (tab + mGapWidth + textView.getPaint().measureText("$"));
+        if (mPaint != null) {
+            margin = (int) (tab + mGapWidth + mPaint.measureText("$"));
+        } else {
+            margin = (int) (tab + mGapWidth + 20);
+        }
         return margin;
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Override
     public void drawLeadingMargin(Canvas c, Paint p, int x, int dir, int top, int baseline, int bottom, CharSequence text, int start, int end, boolean first, Layout l) {
+        mPaint = p;
         if (((Spanned) text).getSpanStart(this) == start) {
             Typeface originalTypeface = p.getTypeface();
             GoogleMaterial googleMaterial = new GoogleMaterial();
-            p.setTypeface(googleMaterial.getTypeface(textViewWeakReference.get().getContext()));
+            p.setTypeface(googleMaterial.getTypeface(mContext));
             if (!mFinish) {
                 String checkboxBlank = String.valueOf(GoogleMaterial.Icon.gmd_check_box_outline_blank.getCharacter());
                 c.drawText(checkboxBlank, x - p.measureText("$") + margin - mGapWidth, baseline, p);

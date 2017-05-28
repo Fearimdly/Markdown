@@ -32,26 +32,7 @@ public class MarkDownBulletSpan extends BulletSpan {
     private static Path circleBulletPath = null;
     private static Path rectBulletPath = null;
 
-    private WeakReference<TextView> textViewWeakReference;
-
-    public MarkDownBulletSpan(int l, int color, int pointIndex, TextView textView) {
-        super(mGapWidth, color);
-        level = l;
-        if (pointIndex > 0) {
-            if (level == 1) {
-                this.index = NumberKit.toRomanNumerals(pointIndex);
-            } else if (level >= 2) {
-                this.index = NumberKit.toABC(pointIndex - 1);
-            } else {
-                this.index = pointIndex + "";
-            }
-        } else {
-            index = null;
-        }
-        mWantColor = true;
-        mColor = color;
-        textViewWeakReference = new WeakReference<>(textView);
-    }
+    private Paint mPaint;
 
     public MarkDownBulletSpan(int level, int color, int pointIndex) {
         super(mGapWidth, color);
@@ -74,9 +55,8 @@ public class MarkDownBulletSpan extends BulletSpan {
 
     @Override
     public int getLeadingMargin(boolean first) {
-        TextView textView = textViewWeakReference != null ? textViewWeakReference.get() : null;
-        if (index != null && textView != null) {
-            margin = (int) (tab + (mGapWidth + textView.getPaint().measureText(index)) * (level + 1));
+        if (index != null && mPaint != null) {
+            margin = (int) (tab + (mGapWidth + mPaint.measureText(index)) * (level + 1));
         } else {
             margin = (2 * BULLET_RADIUS + mGapWidth) * (level + 1) + tab;
         }
@@ -86,6 +66,7 @@ public class MarkDownBulletSpan extends BulletSpan {
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Override
     public void drawLeadingMargin(Canvas c, Paint p, int x, int dir, int top, int baseline, int bottom, CharSequence text, int start, int end, boolean first, Layout l) {
+        mPaint = p;
         if (((Spanned) text).getSpanStart(this) == start) {
             int oldcolor = 0;
             if (mWantColor) {

@@ -4,8 +4,10 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.text.TextPaint;
 import android.text.style.LineHeightSpan;
 import android.text.style.ReplacementSpan;
+import android.util.Log;
 import android.util.Pair;
 
 import java.util.ArrayList;
@@ -20,15 +22,14 @@ public class CodeBlockSpan extends ReplacementSpan implements LineHeightSpan {
     private static final float radius = 10;
     private static final int padding = 30;
 
-    private int width;
+    private int width = 0;
     private Drawable drawable;
     private int baseLine;
     private int lineHeight;
     private CharSequence[] ls;
     private List<Pair<Integer, Integer>> lines;
 
-    public CodeBlockSpan(int width, int color, CharSequence... lines) {
-        this.width = width;
+    public CodeBlockSpan(int color, CharSequence... lines) {
         GradientDrawable g = new GradientDrawable();
         g.setColor(color);
         g.setCornerRadius(radius);
@@ -38,8 +39,14 @@ public class CodeBlockSpan extends ReplacementSpan implements LineHeightSpan {
 
     @Override
     public int getSize(Paint paint, CharSequence text, int start, int end, Paint.FontMetricsInt fm) {
+        Log.e("size", "size");
         if (fm != null && lines == null) {
             lines = new ArrayList<>();
+            for (CharSequence c : ls) {
+                if (paint.measureText(c, 0, c.length()) > width) {
+                    width = (int) paint.measureText(c, 0, c.length()) + padding * 2;
+                }
+            }
             for (CharSequence c : ls) {
                 lines.addAll(measureTextLine(c, 0, c.length(), paint));
             }
@@ -48,9 +55,16 @@ public class CodeBlockSpan extends ReplacementSpan implements LineHeightSpan {
     }
 
     @Override
+    public void updateMeasureState(TextPaint p) {
+        super.updateMeasureState(p);
+        Log.e("update", "update");
+    }
+
+    @Override
     public void draw(Canvas canvas, CharSequence text, int start, int end, float x, int top, int y, int bottom, Paint paint) {
-        drawable.setBounds((int) x, top, (int) x + width, bottom);
+        drawable.setBounds((int) x, top, (int) y, bottom);
         drawable.draw(canvas);
+        width = (int) (y - x);
         int lineNum = 0;
         x = x + padding;
         int i = baseLine + lineHeight / 2 + top;
@@ -106,6 +120,7 @@ public class CodeBlockSpan extends ReplacementSpan implements LineHeightSpan {
 
     @Override
     public void chooseHeight(CharSequence text, int start, int end, int spanstartv, int v, Paint.FontMetricsInt fm) {
+        Log.e("height", "height");
         int num = lines.size();
         lineHeight = fm.bottom - fm.top;
         baseLine = -fm.top;

@@ -1,5 +1,6 @@
 package com.zzhoujay.markdown;
 
+import android.content.Context;
 import android.text.Html;
 import android.text.Spanned;
 import android.widget.TextView;
@@ -21,11 +22,11 @@ public class MarkDown {
      *
      * @param source      源文本
      * @param imageGetter 图片获取回调
-     * @param textView    textView
+     * @param context    context
      * @return spanned
      */
-    public static Spanned fromMarkdown(String source, Html.ImageGetter imageGetter, TextView textView) {
-        MarkDownParser parser = new MarkDownParser(source, new StyleBuilderImpl(textView, imageGetter));
+    public static Spanned fromMarkdown(String source, Html.ImageGetter imageGetter, Context context) {
+        MarkDownParser parser = new MarkDownParser(source, new StyleBuilderImpl(context, imageGetter));
         try {
             return parser.parse();
         } catch (IOException e) {
@@ -39,11 +40,11 @@ public class MarkDown {
      *
      * @param inputStream 输入流
      * @param imageGetter 图片获取回调
-     * @param textView    textView
+     * @param context context
      * @return spanned
      */
-    public static Spanned fromMarkdown(InputStream inputStream, Html.ImageGetter imageGetter, TextView textView) {
-        MarkDownParser parser = new MarkDownParser(inputStream, new StyleBuilderImpl(textView, imageGetter));
+    public static Spanned fromMarkdown(InputStream inputStream, Html.ImageGetter imageGetter, Context context) {
+        MarkDownParser parser = new MarkDownParser(inputStream, new StyleBuilderImpl(context, imageGetter));
         try {
             return parser.parse();
         } catch (IOException e) {
@@ -57,11 +58,11 @@ public class MarkDown {
      *
      * @param reader      BufferReader
      * @param imageGetter 图片获取回调
-     * @param textView    textView
+     * @param context context
      * @return spanned
      */
-    public static Spanned fromMarkdown(BufferedReader reader, Html.ImageGetter imageGetter, TextView textView) {
-        MarkDownParser parser = new MarkDownParser(reader, new StyleBuilderImpl(textView, imageGetter));
+    public static Spanned fromMarkdown(BufferedReader reader, Html.ImageGetter imageGetter, Context context) {
+        MarkDownParser parser = new MarkDownParser(reader, new StyleBuilderImpl(context, imageGetter));
         try {
             return parser.parse();
         } catch (IOException e) {

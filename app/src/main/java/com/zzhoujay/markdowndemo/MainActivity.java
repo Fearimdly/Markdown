@@ -38,33 +38,46 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final TextView textView = (TextView) findViewById(R.id.textView);
+        final MarkdownTextView textView = (MarkdownTextView) findViewById(R.id.textView);
         assert textView != null;
         textView.setMovementMethod(LinkMovementMethod.getInstance());
 
-        final InputStream stream = getResources().openRawResource(R.raw.multi);
+        final InputStream stream = getResources().openRawResource(R.raw.mark);
 
-        textView.post(new Runnable() {
+        new Thread(new Runnable() {
             @Override
             public void run() {
-                long time = System.nanoTime();
-                Spanned spanned = MarkDown.fromMarkdown(stream, new Html.ImageGetter() {
-                    public static final String TAG = "Markdown";
-
+                final Spanned spanned = MarkDown.fromMarkdown(stream, null, MainActivity.this);
+                runOnUiThread(new Runnable() {
                     @Override
-                    public Drawable getDrawable(String source) {
-                        Log.d(TAG, "getDrawable() called with: source = [" + source + "]");
-                        Drawable drawable = new ColorDrawable(Color.LTGRAY);
-                        drawable.setBounds(0, 0, textView.getWidth() - textView.getPaddingLeft() - textView.getPaddingRight(), 400);
-                        return drawable;
+                    public void run() {
+                        textView.setText(spanned);
                     }
-                }, textView);
-                long useTime = System.nanoTime() - time;
-                Toast.makeText(getApplicationContext(), "use time:" + useTime, Toast.LENGTH_LONG).show();
-                Log.e("use time", String.valueOf(useTime));
-                textView.setText(spanned);
+                });
             }
-        });
+        }).start();
+
+//        textView.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                long time = System.nanoTime();
+//                Spanned spanned = MarkDown.fromMarkdown(stream, new Html.ImageGetter() {
+//                    public static final String TAG = "Markdown";
+//
+//                    @Override
+//                    public Drawable getDrawable(String source) {
+//                        Log.d(TAG, "getDrawable() called with: source = [" + source + "]");
+//                        Drawable drawable = new ColorDrawable(Color.LTGRAY);
+//                        drawable.setBounds(0, 0, textView.getWidth() - textView.getPaddingLeft() - textView.getPaddingRight(), 400);
+//                        return drawable;
+//                    }
+//                }, textView.getContext());
+//                long useTime = System.nanoTime() - time;
+//                Toast.makeText(getApplicationContext(), "use time:" + useTime, Toast.LENGTH_LONG).show();
+//                Log.e("use time", String.valueOf(useTime));
+//                textView.setText(spanned);
+//            }
+//        });
 
     }
 }
