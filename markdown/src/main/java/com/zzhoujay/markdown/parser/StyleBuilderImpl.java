@@ -52,7 +52,7 @@ public class StyleBuilderImpl implements StyleBuilder {
     private static final int h6_color = Color.parseColor("#777777");
     private static final int quota_color = Color.parseColor("#DDDDDD");
     private static final int code_color = Color.parseColor("#F0F0F0");
-    private static final int link_color = Color.parseColor("#4078C0");
+    private static final int link_color = -1;
     private static final int h_under_line_color = Color.parseColor("#eeeeee");
 
     private static final float scale_h1 = 2.25f;
