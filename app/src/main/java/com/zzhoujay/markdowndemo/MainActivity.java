@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         assert textView != null;
         textView.setMovementMethod(LinkMovementMethod.getInstance());
 
-        final InputStream stream = getResources().openRawResource(R.raw.mark);
+        final InputStream stream = getResources().openRawResource(R.raw.link_wt);
 
         new Thread(new Runnable() {
             @Override

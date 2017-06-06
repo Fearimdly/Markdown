@@ -46,7 +46,10 @@ public class TagHandlerImpl implements TagHandler {
     private static final Matcher matcherLinkWT = Pattern.compile("\\[#(task|file|event|approval)-.*?\\|.*?\\]").matcher("");
     private static final Matcher matcherLinkWTUser = Pattern.compile("\\[@.*?\\|.*?\\]").matcher("");
     private static final Matcher matcherLinkWTProject = Pattern.compile("\\[/tasks/projects/.*?\\|.*?\\]").matcher("");
+    private static final Matcher matcherLinkWTDrive = Pattern.compile("\\[/drive/.*?\\|.*?\\]").matcher("");
     private static final Matcher matcherLinkWTGroup = Pattern.compile("\\[!channel\\|群组\\]").matcher("");
+    private static final Matcher matcherLinkWTGroup2 = Pattern.compile("\\[!.*?\\|.*?\\]").matcher("");
+    private static final Matcher matcherLinkWTChannel = Pattern.compile("\\[#.*?\\|.*?\\]").matcher("");
     private static final Matcher matcherImage2 = Pattern.compile(".*?(!\\[\\s*(.*?)\\s*]\\s*\\[\\s*(.*?)\\s*])").matcher("");
     private static final Matcher matcherImageId = Pattern.compile("^\\s*!\\[\\s*(.*?)\\s*]:\\s*(\\S+?)(\\s+(['\"])(.*?)\\4)?\\s*$").matcher("");
 
@@ -93,7 +96,10 @@ public class TagHandlerImpl implements TagHandler {
         matchers.put(Tag.LINK_WT, matcherLinkWT);
         matchers.put(Tag.LINK_WT_USER, matcherLinkWTUser);
         matchers.put(Tag.LINK_WT_PROJECT, matcherLinkWTProject);
+        matchers.put(Tag.LINK_WT_DRIVE, matcherLinkWTDrive);
         matchers.put(Tag.LINK_WT_GROUP, matcherLinkWTGroup);
+        matchers.put(Tag.LINK_WT_GROUP2, matcherLinkWTGroup2);
+        matchers.put(Tag.LINK_WT_CHANNEL, matcherLinkWTChannel);
         matchers.put(Tag.LINK_AUTO_LINK2, matcherAutoLink2);
         matchers.put(Tag.IMAGE, matcherImage);
         matchers.put(Tag.IMAGE2, matcherImage2);
@@ -766,7 +772,6 @@ public class TagHandlerImpl implements TagHandler {
     @Override
     public boolean linkWTUser(Line line) {
         Matcher matcher = obtain(Tag.LINK_WT_USER, line.getSource());
-        int index = 0;
         while (matcher.find()) {
             String source = matcher.group();
             Pattern pattern = Pattern.compile("\\[@(.*)\\|(.*)\\]");
@@ -775,7 +780,36 @@ public class TagHandlerImpl implements TagHandler {
                 String result = detailMatcher.group(0);
                 String uid = detailMatcher.group(1);
                 String name = detailMatcher.group(2);
-                String urlMarkdown = "[" + "@" + name + "]" + "(com.lesschat.project://"+ uid + ")";
+                String urlMarkdown = "[" + "@" + name + "]" + "(com.lesschat.user://"+ uid + ")";
+                line.setSource(line.getSource().replace(result, urlMarkdown));
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean linkWTGroup(Line line) {
+        Matcher matcher = obtain(Tag.LINK_WT_GROUP, line.getSource());
+        while (matcher.find()) {
+            String source = matcher.group();
+            line.setSource(line.getSource().replace(source, "[@群组]" + "(com.lesschat.channel://)"));
+        }
+        return false;
+    }
+
+    @Override
+    public boolean linkWTDrive(Line line) {
+        Matcher matcher = obtain(Tag.LINK_WT_DRIVE, line.getSource());
+        int index = 0;
+        while (matcher.find()) {
+            String source = matcher.group();
+            Pattern detailPattern = Pattern.compile("\\[/drive/(.*)\\|(.*)\\]");
+            Matcher detailMatcher = detailPattern.matcher(source);
+            if (detailMatcher.find()) {
+                String result = detailMatcher.group(0);
+                String fileId = detailMatcher.group(1);
+                String name = detailMatcher.group(2);
+                String urlMarkdown = "[" + name + "]" + "(com.lesschat.file://"+ fileId + ")";
                 if (index > 0){
                     urlMarkdown = "\n" + urlMarkdown;
                 }
@@ -787,11 +821,47 @@ public class TagHandlerImpl implements TagHandler {
     }
 
     @Override
-    public boolean linkWTGroup(Line line) {
-        Matcher matcher = obtain(Tag.LINK_WT_GROUP, line.getSource());
+    public boolean linkWTGroup2(Line line) {
+        Matcher matcher = obtain(Tag.LINK_WT_GROUP2, line.getSource());
+        int index = 0;
         while (matcher.find()) {
             String source = matcher.group();
-            line.setSource(line.getSource().replace(source, "[@群组]" + "(com.lesschat.channel://)"));
+            Pattern detailPattern = Pattern.compile("\\[!(.*)\\|(.*)\\]");
+            Matcher detailMatcher = detailPattern.matcher(source);
+            if (detailMatcher.find()) {
+                String result = detailMatcher.group(0);
+                String groupId = detailMatcher.group(1);
+                String name = detailMatcher.group(2);
+                String urlMarkdown = "[" + name + "]" + "(com.lesschat.channel://"+ groupId + ")";
+                if (index > 0){
+                    urlMarkdown = "\n" + urlMarkdown;
+                }
+                line.setSource(line.getSource().replace(result, urlMarkdown));
+            }
+            index += 1;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean linkWTChannel(Line line) {
+        Matcher matcher = obtain(Tag.LINK_WT_CHANNEL, line.getSource());
+        int index = 0;
+        while (matcher.find()) {
+            String source = matcher.group();
+            Pattern detailPattern = Pattern.compile("\\[#(.*)\\|(.*)\\]");
+            Matcher detailMatcher = detailPattern.matcher(source);
+            if (detailMatcher.find()) {
+                String result = detailMatcher.group(0);
+                String channelId = detailMatcher.group(1);
+                String name = detailMatcher.group(2);
+                String urlMarkdown = "[" + name + "]" + "(com.lesschat.channel://"+ channelId + ")";
+                if (index > 0){
+                    urlMarkdown = "\n" + urlMarkdown;
+                }
+                line.setSource(line.getSource().replace(result, urlMarkdown));
+            }
+            index += 1;
         }
         return false;
     }

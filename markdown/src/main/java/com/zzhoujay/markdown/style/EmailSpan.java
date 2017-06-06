@@ -26,7 +26,9 @@ public class EmailSpan extends URLSpan {
     @Override
     public void updateDrawState(TextPaint ds) {
         super.updateDrawState(ds);
-        ds.setColor(color);
+        if (color != -1) {
+            ds.setColor(color);
+        }
         ds.setUnderlineText(false);
     }
 

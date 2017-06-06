@@ -125,6 +125,9 @@ class MarkDownParser {
             tagHandler.linkWTUser(queue.currLine());
             tagHandler.linkWTProject(queue.currLine());
             tagHandler.linkWTGroup(queue.currLine());
+            tagHandler.linkWTDrive(queue.currLine());
+            tagHandler.linkWTGroup2(queue.currLine());
+            tagHandler.linkWTChannel(queue.currLine());
             // 解析style
             if (tagHandler.gap(queue.currLine()) || tagHandler.quota(queue.currLine()) || tagHandler.ol(queue.currLine()) ||
                     tagHandler.ul(queue.currLine()) || tagHandler.h(queue.currLine()) || tagHandler.todo(queue.currLine()) ||
