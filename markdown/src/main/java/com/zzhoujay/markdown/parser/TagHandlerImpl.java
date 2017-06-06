@@ -46,6 +46,7 @@ public class TagHandlerImpl implements TagHandler {
     private static final Matcher matcherLinkWT = Pattern.compile("\\[#(task|file|event|approval)-.*?\\|.*?\\]").matcher("");
     private static final Matcher matcherLinkWTUser = Pattern.compile("\\[@.*?\\|.*?\\]").matcher("");
     private static final Matcher matcherLinkWTProject = Pattern.compile("\\[/tasks/projects/.*?\\|.*?\\]").matcher("");
+    private static final Matcher matcherLinkWTDrive = Pattern.compile("\\[/drive/.*?\\|.*?\\]").matcher("");
     private static final Matcher matcherLinkWTGroup = Pattern.compile("\\[!channel\\|群组\\]").matcher("");
     private static final Matcher matcherImage2 = Pattern.compile(".*?(!\\[\\s*(.*?)\\s*]\\s*\\[\\s*(.*?)\\s*])").matcher("");
     private static final Matcher matcherImageId = Pattern.compile("^\\s*!\\[\\s*(.*?)\\s*]:\\s*(\\S+?)(\\s+(['\"])(.*?)\\4)?\\s*$").matcher("");
@@ -93,6 +94,7 @@ public class TagHandlerImpl implements TagHandler {
         matchers.put(Tag.LINK_WT, matcherLinkWT);
         matchers.put(Tag.LINK_WT_USER, matcherLinkWTUser);
         matchers.put(Tag.LINK_WT_PROJECT, matcherLinkWTProject);
+        matchers.put(Tag.LINK_WT_DRIVE, matcherLinkWTDrive);
         matchers.put(Tag.LINK_WT_GROUP, matcherLinkWTGroup);
         matchers.put(Tag.LINK_AUTO_LINK2, matcherAutoLink2);
         matchers.put(Tag.IMAGE, matcherImage);
@@ -792,6 +794,29 @@ public class TagHandlerImpl implements TagHandler {
         while (matcher.find()) {
             String source = matcher.group();
             line.setSource(line.getSource().replace(source, "[@群组]" + "(com.lesschat.channel://)"));
+        }
+        return false;
+    }
+
+    @Override
+    public boolean linkWTDrive(Line line) {
+        Matcher matcher = obtain(Tag.LINK_WT_DRIVE, line.getSource());
+        int index = 0;
+        while (matcher.find()) {
+            String source = matcher.group();
+            Pattern detailPattern = Pattern.compile("\\[/drive/(.*)\\|(.*)\\]");
+            Matcher detailMatcher = detailPattern.matcher(source);
+            if (detailMatcher.find()) {
+                String result = detailMatcher.group(0);
+                String fileId = detailMatcher.group(1);
+                String name = detailMatcher.group(2);
+                String urlMarkdown = "[" + name + "]" + "(com.lesschat.file://"+ fileId + ")";
+                if (index > 0){
+                    urlMarkdown = "\n" + urlMarkdown;
+                }
+                line.setSource(line.getSource().replace(result, urlMarkdown));
+            }
+            index += 1;
         }
         return false;
     }
