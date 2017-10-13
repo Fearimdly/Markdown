@@ -232,4 +232,4 @@ gradle-app.setting
 
 publish.sh
 
-.idea
+.idea/

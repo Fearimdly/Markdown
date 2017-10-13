@@ -1017,18 +1017,16 @@ public class TagHandlerImpl implements TagHandler {
     @Override
     public boolean inline(Line line) {
         boolean flag = code(line);
-        flag = linkWT(line) || flag;
-        flag = emItalic(line) || flag;
-        flag = em(line) || flag;
-        flag = italic(line) || flag;
-        flag = delete(line) || flag;
         flag = email(line) || flag;
         flag = image(line) || flag;
         flag = image2(line) || flag;
         flag = link(line) || flag;
         flag = link2(line) || flag;
         flag = autoLink(line) || flag;
-        flag = linkWTAutoLink2(line) || flag;
+        flag = emItalic(line) || flag;
+        flag = em(line) || flag;
+        flag = italic(line) || flag;
+        flag = delete(line) || flag;
         return flag;
     }
 

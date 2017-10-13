@@ -1,5 +1,15 @@
 # RichText
 
+## 2
+
+### 3
+
+#### 4
+
+##### 5
+
+###### Title 6
+
 > Android平台下的富文本解析器
 
 * 流式操作
@@ -24,7 +34,7 @@
 
 `hello code`
 
-![演示](image/image.jpg "演示")
+![演示](https://tctechcrunch2011.files.wordpress.com/2015/08/safe_image.gif)
 
 
 ### gradle中引用的方法

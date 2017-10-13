@@ -33,13 +33,6 @@ dependencies {
     compile 'com.mikepenz:material-design-iconic-typeface:2.2.0.2@aar'
     compile 'com.mikepenz:google-material-typeface:3.0.1.0.original@aar'
     compile 'com.android.support:appcompat-v7:25.1.0'
-}
 
-uploadArchives {
-    repositories.mavenDeployer {
-        repository(url: "file://" + file("maven"))
-        pom.groupId = "com.worktile.markdown"
-        pom.artifactId = 'markdown'
-        pom.version = version_name
-    }
+    compile 'com.github.bumptech.glide:glide:3.7.0'
 }
